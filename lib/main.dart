@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_battleships/components/grid.dart';
-import 'package:flutter_battleships/components/ships.dart';
+import 'package:flutter_battleships/components/player_board.dart';
+import 'package:flutter_battleships/config/theme.dart';
 
 void main() {
   runApp(const MainApp());
@@ -40,147 +40,70 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Battleships Demo',
-      theme: ThemeData(
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: Colors.blueGrey[50],
-        appBarTheme: AppBarTheme(
-          elevation: 0.0,
-          color: Colors.brown[200],
-          titleTextStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      darkTheme: ThemeData.dark().copyWith(
-        brightness: Brightness.dark,
-        appBarTheme: AppBarTheme(
-          color: Colors.brown[900],
-          elevation: 0.0,
-          titleTextStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      theme: ThemeConfiguration.theme,
+      darkTheme: ThemeConfiguration.darkTheme,
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: Scaffold(
-        appBar: AppBar(
-            centerTitle: true,
-            title: const Text('Flutter Battleships'),
-            actions: [
-              IconButton(
-                icon: Icon(
-                  isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                  size: 24.0,
-                ),
-                onPressed: () => toggleDarkMode(),
-              )
-            ]),
-        body: SafeArea(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height - kToolbarHeight * 1.5,
-            child: SingleChildScrollView(
-              // padding: EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 24.0,
-                      horizontal: 8.0,
-                    ),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                          'assets/images/opponent.jpg',
-                        ),
-                        fit: BoxFit.fill,
-                        opacity: 0.25,
-                        // colorFilter: ColorFilter.mode(
-                        //   Colors.red.withOpacity(0.25),
-                        //   BlendMode.darken,
-                        // ),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Enemy',
-                          style: TextStyle(
-                            fontSize: 26.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: ShipsWidget(),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: GridWidget(),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+      home: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        bool isLandscape = constraints.maxWidth > constraints.maxHeight;
+        double? height = isLandscape
+            ? null
+            : MediaQuery.of(context).size.height - kToolbarHeight * 1.5;
+        double? width = isLandscape ? MediaQuery.of(context).size.width : null;
+        Widget mainLayout;
+
+        if (isLandscape) {
+          mainLayout = Row(
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Container(
+                width: width! / 2,
+                child: PlayerBoard(player: 'enemy'),
+              ),
+              // Divider(thickness: 2),
+              Container(
+                width: width! / 2,
+                child: PlayerBoard(player: 'owner'),
+              ),
+            ],
+          );
+        } else {
+          mainLayout = const Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              PlayerBoard(player: 'enemy'),
+              Divider(thickness: 2),
+              PlayerBoard(player: 'owner'),
+            ],
+          );
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+              centerTitle: true,
+              title: const Text('Flutter Battleships'),
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                    size: 24.0,
                   ),
-                  Divider(thickness: 2),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 24.0,
-                      horizontal: 8.0,
-                    ),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                          'assets/images/player.jpg',
-                        ),
-                        fit: BoxFit.fill,
-                        opacity: 0.25,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'You',
-                          style: TextStyle(
-                            fontSize: 26.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: ShipsWidget(),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: GridWidget(),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                  onPressed: () => toggleDarkMode(),
+                )
+              ]),
+          body: SafeArea(
+            child: SizedBox(
+              height: height,
+              width: width,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: mainLayout,
               ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }
