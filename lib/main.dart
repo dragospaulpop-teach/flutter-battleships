@@ -1,8 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_battleships/components/player_board.dart';
 import 'package:flutter_battleships/config/theme.dart';
+import 'package:flutter_battleships/firebase_options.dart';
 
-void main() {
+import 'package:flutter_battleships/router.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MainApp());
 }
 
@@ -38,72 +47,14 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes:
+          AppRouter(context: context, toggleDarkMode: toggleDarkMode).routes,
+      initialRoute: '/',
       debugShowCheckedModeBanner: false,
       title: 'Flutter Battleships Demo',
       theme: ThemeConfiguration.theme,
       darkTheme: ThemeConfiguration.darkTheme,
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-        bool isLandscape = constraints.maxWidth > constraints.maxHeight;
-        double? height = isLandscape
-            ? null
-            : MediaQuery.of(context).size.height - kToolbarHeight * 1.5;
-        double? width = isLandscape ? MediaQuery.of(context).size.width : null;
-        Widget mainLayout;
-
-        if (isLandscape) {
-          mainLayout = Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                width: width! / 2,
-                child: PlayerBoard(player: 'enemy'),
-              ),
-              // Divider(thickness: 2),
-              Container(
-                width: width! / 2,
-                child: PlayerBoard(player: 'owner'),
-              ),
-            ],
-          );
-        } else {
-          mainLayout = const Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              PlayerBoard(player: 'enemy'),
-              Divider(thickness: 2),
-              PlayerBoard(player: 'owner'),
-            ],
-          );
-        }
-
-        return Scaffold(
-          appBar: AppBar(
-              centerTitle: true,
-              title: const Text('Flutter Battleships'),
-              actions: [
-                IconButton(
-                  icon: Icon(
-                    isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                    size: 24.0,
-                  ),
-                  onPressed: () => toggleDarkMode(),
-                )
-              ]),
-          body: SafeArea(
-            child: SizedBox(
-              height: height,
-              width: width,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: mainLayout,
-              ),
-            ),
-          ),
-        );
-      }),
     );
   }
 }

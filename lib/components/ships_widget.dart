@@ -44,14 +44,14 @@ class _ShipsWidgetState extends State<ShipsWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Ships inventory',
           style: TextStyle(
             fontSize: 12.0,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Divider(),
+        const Divider(),
         ListView.builder(
           shrinkWrap: true,
           itemBuilder: (context, index) {
@@ -60,7 +60,7 @@ class _ShipsWidgetState extends State<ShipsWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                       right: 8.0,
                     ),
                     child: Image(
@@ -76,14 +76,14 @@ class _ShipsWidgetState extends State<ShipsWidget> {
                       children: [
                         Text(
                           ships[index].name,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "${ships[index].length.toString()} cells",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12.0,
                             color: Colors.grey,
                           ),
@@ -92,7 +92,7 @@ class _ShipsWidgetState extends State<ShipsWidget> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 8.0,
                     ),
                     child: Image(

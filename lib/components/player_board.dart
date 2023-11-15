@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_battleships/components/grid.dart';
-import 'package:flutter_battleships/components/ships.dart';
+import 'package:flutter_battleships/components/grid_widget.dart';
+import 'package:flutter_battleships/components/ships_widget.dart';
 
 class PlayerBoard extends StatefulWidget {
   final String player;
@@ -15,7 +15,7 @@ class _PlayerBoardState extends State<PlayerBoard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         vertical: 24.0,
         horizontal: 8.0,
       ),
@@ -34,7 +34,7 @@ class _PlayerBoardState extends State<PlayerBoard> {
           // ),
         ),
       ),
-      child: Column(
+      child: const Column(
         children: [
           Text(
             'Enemy',
