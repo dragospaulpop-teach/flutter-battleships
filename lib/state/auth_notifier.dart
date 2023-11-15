@@ -48,7 +48,7 @@ class AuthNotifier extends ChangeNotifier {
       if (user != null) {
         await user.updateDisplayName(username);
         await user.reload();
-        _user = await _auth.currentUser;
+        _user = _auth.currentUser;
       }
 
       return userCredential;
