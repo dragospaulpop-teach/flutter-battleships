@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -5,6 +6,7 @@ class AuthNotifier extends ChangeNotifier {
   User? _user;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   User? get user => _user;
 
@@ -49,6 +51,11 @@ class AuthNotifier extends ChangeNotifier {
         await user.updateDisplayName(username);
         await user.reload();
         _user = _auth.currentUser;
+
+        _firestore
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .set({'username': username});
 
         notifyListeners();
       }

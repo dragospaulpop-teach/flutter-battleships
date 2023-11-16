@@ -8,9 +8,9 @@ class AppDrawer extends StatelessWidget {
   final VoidCallback? toggleDarkMode;
 
   void editDisplayName(BuildContext context) {
-    final _auth = Provider.of<AuthNotifier>(context, listen: false);
+    final auth = Provider.of<AuthNotifier>(context, listen: false);
     final TextEditingController controller =
-        TextEditingController(text: _auth.user?.displayName);
+        TextEditingController(text: auth.user?.displayName);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -29,15 +29,25 @@ class AppDrawer extends StatelessWidget {
               }),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Save'),
+              child: Text(
+                'Save',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
               onPressed: () {
-                _auth.updateDisplayName(controller.text);
+                auth.updateDisplayName(controller.text);
                 Navigator.of(context).pop();
               },
             ),
@@ -105,6 +115,30 @@ class AppDrawer extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
+                  ListTile(
+                    leading: const Icon(Icons.local_fire_department),
+                    title: const Text("Active Challenges"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/challenges');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.military_tech),
+                    title: const Text("Battle History"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/history');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.radar),
+                    title: const Text("Challenge a friend"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/users');
+                    },
+                  ),
                   ListTile(
                     leading: const Icon(Icons.info_sharp),
                     title: const Text("About"),
