@@ -17,7 +17,7 @@ class AboutPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "About \"Naval Clash\":",
+                  "About \"Naval Clash\"",
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 Text(

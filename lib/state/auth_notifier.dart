@@ -49,6 +49,8 @@ class AuthNotifier extends ChangeNotifier {
         await user.updateDisplayName(username);
         await user.reload();
         _user = _auth.currentUser;
+
+        notifyListeners();
       }
 
       return userCredential;
@@ -59,5 +61,20 @@ class AuthNotifier extends ChangeNotifier {
 
   Future<void> signOut() async {
     return await _auth.signOut();
+  }
+
+  Future<void> updateDisplayName(String username) async {
+    if (_auth.currentUser != null) {
+      try {
+        User user = _auth.currentUser!;
+        await user.updateDisplayName(username);
+        await user.reload();
+        _user = _auth.currentUser;
+
+        notifyListeners();
+      } on FirebaseAuthException catch (e) {
+        throw Exception(e.code);
+      }
+    }
   }
 }
