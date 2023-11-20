@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_battleships/config/theme.dart';
 import 'package:flutter_battleships/firebase_options.dart';
-
 import 'package:flutter_battleships/router.dart';
+import 'package:flutter_battleships/state/notifications_service.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +49,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       routes:
           AppRouter(context: context, toggleDarkMode: toggleDarkMode).routes,
       initialRoute: '/',

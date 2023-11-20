@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_battleships/state/notifications_service.dart';
 
 class AuthNotifier extends ChangeNotifier {
   User? _user;
@@ -11,10 +12,21 @@ class AuthNotifier extends ChangeNotifier {
   User? get user => _user;
 
   AuthNotifier() {
-    _auth.authStateChanges().listen((User? user) {
+    _auth.authStateChanges().listen((User? user) async {
       _user = user;
+
+      if (user != null) {
+        await setUpNotificationsServcie();
+      }
+
       notifyListeners();
     });
+  }
+
+  Future<void> setUpNotificationsServcie() async {
+    // initialize notifications
+    final notificationsService = NotificationsService();
+    await notificationsService.initialize();
   }
 
   Future<UserCredential> signIn({
@@ -55,7 +67,7 @@ class AuthNotifier extends ChangeNotifier {
         _firestore
             .collection('users')
             .doc(_auth.currentUser!.uid)
-            .set({'username': username});
+            .set({'username': username}, SetOptions(merge: true));
 
         notifyListeners();
       }
