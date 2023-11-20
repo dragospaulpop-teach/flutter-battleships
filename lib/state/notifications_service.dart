@@ -13,6 +13,9 @@ class NotificationsService {
     NotificationSettings settings =
         await _firebaseMessaging.requestPermission();
 
+    // this only handles one device per user
+    // for multiple devices we need to store an array of tokens both in firestore and in our shared preferences
+
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       final String? localToken = await PreferencesService().getFCMToken();
       final String? token = await _firebaseMessaging.getToken();
@@ -52,14 +55,5 @@ class NotificationsService {
         .collection('users')
         .doc(_auth.currentUser!.uid)
         .set({'token': token}, SetOptions(merge: true));
-  }
-
-  Future<void> sendBattleNotification(String receiverId) async {
-    final DocumentSnapshot receiver =
-        await _firestore.collection('users').doc(receiverId).get();
-
-    if (receiver.exists) {
-      // call cloud function to send notification
-    }
   }
 }

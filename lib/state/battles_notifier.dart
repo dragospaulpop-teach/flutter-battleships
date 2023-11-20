@@ -46,7 +46,8 @@ class BattlesNotifier extends ChangeNotifier {
       await _firestore.collection('challenges').add(challenge.toJson());
     }
 
-    // send a notification to the target user
+    // a notification is automatically sent to the target user by running a cloud function
+    // when the firestore document is added or changed
   }
 
   // TODO get active challenges for logged in user
