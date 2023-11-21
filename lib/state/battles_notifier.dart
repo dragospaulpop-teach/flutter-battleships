@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_battleships/models/challenge.dart';
 
-class BattlesNotifier extends ChangeNotifier {
+class BattlesNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -24,26 +23,62 @@ class BattlesNotifier extends ChangeNotifier {
 
     // check to see if there is already a challenge in progress
     // between the two users
-    final QuerySnapshot querySnapshot = await _firestore
+
+    // receiuved challenge
+    final QuerySnapshot receivedQuerySnapshot = await _firestore
         .collection('challenges')
+        .doc(targetId)
+        .collection('received_challenges')
         .where('issuerId', isEqualTo: issuerId)
+        .where('isAccepted', isEqualTo: false)
+        .limit(1)
+        .get();
+
+    final QuerySnapshot issuedQuerySnapshot = await _firestore
+        .collection('challenges')
+        .doc(issuerId)
+        .collection('issued_challenges')
         .where('targetId', isEqualTo: targetId)
         .where('isAccepted', isEqualTo: false)
         .limit(1)
         .get();
 
-    if (querySnapshot.docs.isNotEmpty) {
-      // update the challenge timestamp in firestore
+    if (receivedQuerySnapshot.docs.isNotEmpty) {
+      // update the challenge timestamp for target
       await _firestore
           .collection('challenges')
-          .doc(querySnapshot.docs.first.id)
-          .set(
+          .doc(targetId)
+          .collection('received_challenges')
+          .doc(receivedQuerySnapshot.docs.first.id)
+          .update(
         {'timestamp': timestamp},
-        SetOptions(merge: true),
       );
     } else {
-      // create a new challenge
-      await _firestore.collection('challenges').add(challenge.toJson());
+      // create a new challenge for target
+      await _firestore
+          .collection('challenges')
+          .doc(targetId)
+          .collection('received_challenges')
+          .add(challenge.toJson());
+    }
+
+    if (issuedQuerySnapshot.docs.isNotEmpty) {
+      // update the challenge timestamp for target
+      await _firestore
+          .collection('challenges')
+          .doc(issuerId)
+          .collection('issued_challenges')
+          .doc(issuedQuerySnapshot.docs.first.id)
+          .update(
+        {'timestamp': timestamp},
+      );
+    } else {
+      // create a new challenge for target
+      await _firestore
+          .collection('challenges')
+          .doc(issuerId)
+          .collection('issued_challenges')
+          .add(challenge.toJson());
     }
 
     // a notification is automatically sent to the target user by running a cloud function
@@ -55,17 +90,19 @@ class BattlesNotifier extends ChangeNotifier {
     final String userId = _auth.currentUser!.uid;
     return _firestore
         .collection('challenges')
-        .where('issuerId', isEqualTo: userId)
+        .doc(userId)
+        .collection('issued_challenges')
         .where('isAccepted', isEqualTo: false)
         .orderBy('timestamp', descending: true)
         .snapshots();
   }
 
-  Stream<QuerySnapshot> getActiveChallengesIssuedByOtherUser() {
+  Stream<QuerySnapshot> getActiveChallengesReceivedByUser() {
     final String userId = _auth.currentUser!.uid;
     return _firestore
         .collection('challenges')
-        .where('targetId', isEqualTo: userId)
+        .doc(userId)
+        .collection('received_challenges')
         .where('isAccepted', isEqualTo: false)
         .orderBy('timestamp', descending: true)
         .snapshots();

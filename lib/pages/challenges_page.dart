@@ -116,7 +116,7 @@ class ChallengesPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           StreamBuilder<QuerySnapshot>(
-            stream: _battlesNotifier.getActiveChallengesIssuedByOtherUser(),
+            stream: _battlesNotifier.getActiveChallengesReceivedByUser(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {

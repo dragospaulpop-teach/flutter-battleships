@@ -1,15 +1,15 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesService {
-  Future<String?> getFCMToken() async {
+  Future<String?> getFCMToken(String uid) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
 
-    return preferences.getString('fcmToken');
+    return preferences.getString('fcmToken-$uid');
   }
 
-  Future<void> saveFCMToken(String token) async {
+  Future<void> saveFCMToken(String token, String uid) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
 
-    preferences.setString('fcmToken', token);
+    preferences.setString('fcmToken-$uid', token);
   }
 }

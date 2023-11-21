@@ -16,7 +16,7 @@ const {initializeApp} = require("firebase-admin/app");
 const {onDocumentWritten} = require("firebase-functions/v2/firestore");
 
 // firestore access
-const {getFirestore} = require("firebase-admin/firestore");
+const {getFirestore, FieldValue} = require("firebase-admin/firestore");
 
 // fcm access
 const {getMessaging} = require("firebase-admin/messaging");
@@ -28,11 +28,27 @@ const db = getFirestore();
 const messaging = getMessaging();
 
 exports.sendNotification = onDocumentWritten(
-    "challenges/{challengeId}",
+    "challenges/{userId}/received_challenges/{challengeId}",
     async (event) => {
       // Check if the document has been deleted
       if (!event.data.after.exists) {
         logger.info("challenge has been deleted; no notification sent");
+
+        const oldData = event.data.before.data();
+        const issuerUsername = oldData.issuerUsername;
+        const receiverId = oldData.targetId;
+        const notificationsRef = db
+            .collection("notifications")
+            .doc(receiverId)
+            .collection("messages");
+        const notification = {
+          title: "Challenged withdrawn",
+          body: `${issuerUsername} withdrew their challenge`,
+          timestamp: FieldValue.serverTimestamp(),
+        };
+        await notificationsRef.add(notification);
+
+        logger.info("notification saved: " + JSON.stringify(notification));
         return null;
       }
 
@@ -68,10 +84,31 @@ exports.sendNotification = onDocumentWritten(
           token: receiverToken,
         };
 
-        logger.info("payload: " + JSON.stringify(payload));
+        logger.info("notification payload: " + JSON.stringify(payload));
 
         // send the notification
         await messaging.send(payload);
+
+        // save notification message
+        // into the notifications collection for the receiver
+
+        const notificationsRef = db
+            .collection("notifications")
+            .doc(receiverId)
+            .collection("notifications");
+        const isOldChallenge = event.data.before.exists;
+        const notification = {
+          title: isOldChallenge ?
+            "Challenged updated":
+            "New battle challenge!",
+          body: `${newChallenge.issuerUsername} has challenged you${
+            isOldChallenge ? " ...again!" : "!"
+          }`,
+          timestamp: FieldValue.serverTimestamp(),
+        };
+
+        await notificationsRef.add(notification);
+        logger.info("notification saved: " + JSON.stringify(notification));
       } catch (error) {
         logger.error(error);
       }

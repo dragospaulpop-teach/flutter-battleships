@@ -5,7 +5,7 @@ import 'package:flutter_battleships/state/notifications_service.dart';
 import 'package:provider/provider.dart';
 
 class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({super.key});
+  NotificationsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

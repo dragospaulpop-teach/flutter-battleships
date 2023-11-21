@@ -1,32 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_battleships/main.dart';
 import 'package:flutter_battleships/state/notifications_service.dart';
+import 'package:provider/provider.dart';
 
 class AuthNotifier extends ChangeNotifier {
   User? _user;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late final NotificationsService _notificationsService;
 
   User? get user => _user;
 
   AuthNotifier() {
+    BuildContext context = navigatorKey.currentContext!;
+    _notificationsService =
+        Provider.of<NotificationsService>(context, listen: false);
+
     _auth.authStateChanges().listen((User? user) async {
       _user = user;
 
       if (user != null) {
-        await setUpNotificationsService();
+        await _notificationsService.initialize(user.uid);
+      } else {
+        _notificationsService.stopLisening();
       }
 
       notifyListeners();
     });
-  }
-
-  Future<void> setUpNotificationsService() async {
-    // initialize notifications
-    final notificationsService = NotificationsService();
-    await notificationsService.initialize();
   }
 
   Future<UserCredential> signIn({
@@ -41,7 +44,7 @@ class AuthNotifier extends ChangeNotifier {
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.code);
+      throw Exception(e.message);
     }
   }
 
@@ -74,7 +77,7 @@ class AuthNotifier extends ChangeNotifier {
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.code);
+      throw Exception(e.message);
     }
   }
 
@@ -92,7 +95,7 @@ class AuthNotifier extends ChangeNotifier {
 
         notifyListeners();
       } on FirebaseAuthException catch (e) {
-        throw Exception(e.code);
+        throw Exception(e.message);
       }
     }
   }

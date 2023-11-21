@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -12,24 +14,33 @@ class NotificationsService extends ChangeNotifier {
 
   final List<Message> messages = [];
 
-  Future<void> initialize() async {
+  StreamSubscription? messagesListener;
+
+  Future<void> initialize(String uid) async {
     NotificationSettings settings =
         await _firebaseMessaging.requestPermission();
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      // Call a method to send the new token to your backend
+      PreferencesService().saveFCMToken(newToken, uid);
+      saveTokenToFirestore(newToken);
+    });
 
     // this only handles one device per user
     // for multiple devices we need to store an array of tokens both in firestore and in our shared preferences
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      final String? localToken = await PreferencesService().getFCMToken();
+      final String? localToken = await PreferencesService().getFCMToken(uid);
       final String? token = await _firebaseMessaging.getToken();
 
       if (localToken != token) {
-        PreferencesService().saveFCMToken(token!);
+        PreferencesService().saveFCMToken(token!, uid);
         saveTokenToFirestore(token);
       }
     }
 
     setupNotifications();
+    setupMessages();
   }
 
   void handleMessage(RemoteMessage? message) {
@@ -62,5 +73,33 @@ class NotificationsService extends ChangeNotifier {
         .collection('users')
         .doc(_auth.currentUser!.uid)
         .set({'token': token}, SetOptions(merge: true));
+  }
+
+  void setupMessages() {
+    final String userId = _auth.currentUser!.uid;
+    messagesListener = _firestore
+        .collection('notifications')
+        .doc(userId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((event) {
+      messages.clear();
+      if (event.docs.isNotEmpty) {
+        for (var element in event.docs) {
+          Message message = Message(
+            title: element['title'],
+            body: element['body'],
+            timestamp: element['timestamp'],
+          );
+          messages.add(message);
+        }
+      }
+      notifyListeners();
+    });
+  }
+
+  void stopLisening() {
+    messagesListener?.cancel();
   }
 }
