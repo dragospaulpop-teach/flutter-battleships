@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_battleships/components/appbar_widget.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -6,9 +7,7 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('About'),
-      ),
+      appBar: AppbarWidget(title: 'About'),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

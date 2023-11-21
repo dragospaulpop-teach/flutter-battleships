@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_battleships/components/appbar_widget.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -6,9 +7,7 @@ class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('History'),
-      ),
+      appBar: AppbarWidget(title: 'History'),
       body: const SafeArea(
         child: Center(
           child: Text("History"),

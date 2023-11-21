@@ -1,12 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_battleships/components/appbar_widget.dart';
 import 'package:flutter_battleships/state/battles_notifier.dart';
 
 class ChallengesPage extends StatelessWidget {
   ChallengesPage({super.key});
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final BattlesNotifier _battlesNotifier = BattlesNotifier();
 
   // Future<void> deleteChallenge(BuildContext context, String challengeId) {
@@ -60,9 +59,7 @@ class ChallengesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Challenges'),
-      ),
+      appBar: AppbarWidget(title: 'Challenges'),
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [

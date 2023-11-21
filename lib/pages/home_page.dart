@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_battleships/components/app_drawer.dart';
-import 'package:flutter_battleships/components/battle_history.dart';
-import 'package:flutter_battleships/components/login_or_signup_form.dart';
+import 'package:flutter_battleships/components/appbar_widget.dart';
 import 'package:flutter_battleships/state/auth_notifier.dart';
 import 'package:provider/provider.dart';
 
@@ -12,21 +11,39 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AuthNotifier(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Naval Clash'),
-        ),
-        drawer: AppDrawer(toggleDarkMode: toggleDarkMode),
-        body: SafeArea(
-          child: Center(
-            child: Consumer<AuthNotifier>(
-              builder: (context, auth, child) {
-                return auth.user != null
-                    ? BattleHistory(auth: auth)
-                    : const LoginOrSignupForm();
-              },
+    final AuthNotifier auth = Provider.of<AuthNotifier>(context, listen: false);
+
+    return Scaffold(
+      appBar: AppbarWidget(title: 'Naval Clash'),
+      drawer: AppDrawer(toggleDarkMode: toggleDarkMode),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Welcome back to Naval Clash, ${auth.user!.displayName}!",
+                  style: Theme.of(context).textTheme.headlineLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                OutlinedButton(
+                  child: const Text('Challange Requests'),
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed('/challenges'),
+                ),
+                const SizedBox(height: 32),
+                OutlinedButton(
+                  child: const Text('Battle History'),
+                  onPressed: () => Navigator.of(context).pushNamed('/history'),
+                ),
+                const SizedBox(height: 32),
+                OutlinedButton(
+                  child: const Text('Challenge a friend'),
+                  onPressed: () => Navigator.of(context).pushNamed('/users'),
+                ),
+              ],
             ),
           ),
         ),

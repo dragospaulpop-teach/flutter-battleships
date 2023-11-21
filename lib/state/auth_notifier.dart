@@ -16,14 +16,14 @@ class AuthNotifier extends ChangeNotifier {
       _user = user;
 
       if (user != null) {
-        await setUpNotificationsServcie();
+        await setUpNotificationsService();
       }
 
       notifyListeners();
     });
   }
 
-  Future<void> setUpNotificationsServcie() async {
+  Future<void> setUpNotificationsService() async {
     // initialize notifications
     final notificationsService = NotificationsService();
     await notificationsService.initialize();

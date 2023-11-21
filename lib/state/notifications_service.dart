@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_battleships/main.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_battleships/models/message.dart';
 import 'package:flutter_battleships/state/preferences_service.dart';
 
-class NotificationsService {
+class NotificationsService extends ChangeNotifier {
   final _firebaseMessaging = FirebaseMessaging.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  final List<Message> messages = [];
 
   Future<void> initialize() async {
     NotificationSettings settings =
@@ -31,9 +34,13 @@ class NotificationsService {
 
   void handleMessage(RemoteMessage? message) {
     if (message != null) {
-      navigatorKey.currentState!.pushNamed(
-        '/challenges',
-      );
+      messages.add(Message(
+        title: message.notification!.title!,
+        body: message.notification!.body!,
+        timestamp: Timestamp.fromDate(message.sentTime!),
+      ));
+
+      notifyListeners();
     }
   }
 

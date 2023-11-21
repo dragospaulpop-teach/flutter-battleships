@@ -6,6 +6,10 @@ class ThemeConfiguration {
     brightness: Brightness.light,
     scaffoldBackgroundColor: Colors.blueGrey[50],
     primaryColor: Colors.brown[200],
+    badgeTheme: BadgeThemeData(
+      backgroundColor: Colors.brown[900],
+      textColor: Colors.white,
+    ),
     appBarTheme: AppBarTheme(
       elevation: 0.0,
       color: Colors.brown[200],
@@ -20,8 +24,12 @@ class ThemeConfiguration {
   static ThemeData darkTheme = ThemeData.dark().copyWith(
     useMaterial3: true,
     brightness: Brightness.dark,
-    primaryColor: Colors.brown[900],
     scaffoldBackgroundColor: Colors.blueGrey[900],
+    primaryColor: Colors.brown[900],
+    badgeTheme: BadgeThemeData(
+      backgroundColor: Colors.brown[200],
+      textColor: Colors.white,
+    ),
     appBarTheme: AppBarTheme(
       color: Colors.brown[900],
       elevation: 0.0,

@@ -115,30 +115,42 @@ class AppDrawer extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  ListTile(
-                    leading: const Icon(Icons.local_fire_department),
-                    title: const Text("Active Challenges"),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/challenges');
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.military_tech),
-                    title: const Text("Battle History"),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/history');
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.radar),
-                    title: const Text("Challenge a friend"),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/users');
-                    },
-                  ),
+                  if (auth.user != null)
+                    ListTile(
+                      leading: const Icon(Icons.local_fire_department),
+                      title: const Text("Active Challenges"),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/challenges');
+                      },
+                    ),
+                  if (auth.user != null)
+                    ListTile(
+                      leading: const Icon(Icons.military_tech),
+                      title: const Text("Battle History"),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/history');
+                      },
+                    ),
+                  if (auth.user != null)
+                    ListTile(
+                      leading: const Icon(Icons.radar),
+                      title: const Text("Challenge a friend"),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/users');
+                      },
+                    ),
+                  if (auth.user != null)
+                    ListTile(
+                      leading: const Icon(Icons.notifications),
+                      title: const Text("Notifications"),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/notifications');
+                      },
+                    ),
                   ListTile(
                     leading: const Icon(Icons.info_sharp),
                     title: const Text("About"),
