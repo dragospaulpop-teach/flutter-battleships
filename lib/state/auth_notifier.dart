@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_battleships/main.dart';
 import 'package:flutter_battleships/state/notifications_service.dart';
+import 'package:flutter_battleships/state/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class AuthNotifier extends ChangeNotifier {
@@ -10,6 +13,7 @@ class AuthNotifier extends ChangeNotifier {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final StorageService _storage = StorageService();
   late final NotificationsService _notificationsService;
 
   User? get user => _user;
@@ -94,6 +98,31 @@ class AuthNotifier extends ChangeNotifier {
         _user = _auth.currentUser;
 
         notifyListeners();
+      } on FirebaseAuthException catch (e) {
+        throw Exception(e.message);
+      }
+    }
+  }
+
+  Future<void> updateAvatarURL(String avatar) async {
+    if (_auth.currentUser != null) {
+      try {
+        User user = _auth.currentUser!;
+        await user.updatePhotoURL(avatar);
+
+        notifyListeners();
+      } on FirebaseAuthException catch (e) {
+        throw Exception(e.message);
+      }
+    }
+  }
+
+  Future<void> uploadAvatar(File image) async {
+    if (_auth.currentUser != null) {
+      try {
+        String? url =
+            await _storage.uploadAvatar(image, _auth.currentUser!.uid);
+        await updateAvatarURL(url!);
       } on FirebaseAuthException catch (e) {
         throw Exception(e.message);
       }

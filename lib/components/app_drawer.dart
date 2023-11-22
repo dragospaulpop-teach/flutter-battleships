@@ -1,32 +1,63 @@
+import 'dart:io';
+
 import "package:flutter/material.dart";
+import 'package:flutter_battleships/components/image_capturer.dart';
 import 'package:flutter_battleships/components/naval_text_field.dart';
 import 'package:flutter_battleships/state/auth_notifier.dart';
 import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key, this.toggleDarkMode});
+  AppDrawer({super.key, this.toggleDarkMode});
   final VoidCallback? toggleDarkMode;
 
   void editDisplayName(BuildContext context) {
     final auth = Provider.of<AuthNotifier>(context, listen: false);
     final TextEditingController controller =
         TextEditingController(text: auth.user?.displayName);
+
+    File? imageFile;
+
+    Future<void> captureImage() async {
+      imageFile = await ImageCapturer.captureImage();
+    }
+
+    void saveInfo() {
+      auth.updateDisplayName(controller.text);
+      if (imageFile != null) {
+        auth.uploadAvatar(imageFile!);
+      }
+      Navigator.of(context).pop();
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Edit your username'),
-          content: NavalTextField(
-              controller: controller,
-              label: 'Username',
-              hint: 'Enter your username',
-              obscureText: false,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a username';
-                }
-                return null;
-              }),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              NavalTextField(
+                controller: controller,
+                label: 'Username',
+                hint: 'Enter your username',
+                obscureText: false,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a username';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () async {
+                  await captureImage();
+                },
+                child: Text("open the camera"),
+              )
+            ],
+          ),
           actions: [
             TextButton(
               child: Text(
@@ -46,10 +77,7 @@ class AppDrawer extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              onPressed: () {
-                auth.updateDisplayName(controller.text);
-                Navigator.of(context).pop();
-              },
+              onPressed: () => saveInfo(),
             ),
           ],
         );
@@ -84,6 +112,9 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 currentAccountPicture: CircleAvatar(
+                  backgroundImage: auth.user?.photoURL != null
+                      ? NetworkImage(auth.user!.photoURL!)
+                      : null,
                   backgroundColor: Theme.of(context).primaryColor,
                   foregroundColor: Colors.white,
                   child: Text(auth.user?.displayName != null &&

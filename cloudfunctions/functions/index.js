@@ -95,7 +95,7 @@ exports.sendNotification = onDocumentWritten(
         const notificationsRef = db
             .collection("notifications")
             .doc(receiverId)
-            .collection("notifications");
+            .collection("messages");
         const isOldChallenge = event.data.before.exists;
         const notification = {
           title: isOldChallenge ?
