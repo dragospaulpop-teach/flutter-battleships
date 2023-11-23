@@ -15,7 +15,7 @@ class AppRouter {
       '/': (context) => HomePage(toggleDarkMode: toggleDarkMode),
       '/about': (context) => const AboutPage(),
       '/challenges': (context) => ChallengesPage(),
-      '/notifications': (context) => NotificationsPage(),
+      '/notifications': (context) => const NotificationsPage(),
       '/history': (context) => const HistoryPage(),
       '/users': (context) => UsersPage(),
       '/login': (context) => LoginOrSignupPage(

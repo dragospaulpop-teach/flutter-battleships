@@ -59,7 +59,7 @@ class ChallengesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarWidget(title: 'Challenges'),
+      appBar: const AppbarWidget(title: 'Challenges'),
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [

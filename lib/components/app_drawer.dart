@@ -7,82 +7,101 @@ import 'package:flutter_battleships/state/auth_notifier.dart';
 import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
-  AppDrawer({super.key, this.toggleDarkMode});
+  const AppDrawer({super.key, this.toggleDarkMode});
   final VoidCallback? toggleDarkMode;
 
   void editDisplayName(BuildContext context) {
-    final auth = Provider.of<AuthNotifier>(context, listen: false);
-    final TextEditingController controller =
-        TextEditingController(text: auth.user?.displayName);
-
-    File? imageFile;
-
-    Future<void> captureImage() async {
-      imageFile = await ImageCapturer.captureImage();
-    }
-
-    void saveInfo() {
-      auth.updateDisplayName(controller.text);
-      if (imageFile != null) {
-        auth.uploadAvatar(imageFile!);
-      }
-      Navigator.of(context).pop();
-    }
-
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Edit your username'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              NavalTextField(
-                controller: controller,
-                label: 'Username',
-                hint: 'Enter your username',
-                obscureText: false,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a username';
-                  }
-                  return null;
-                },
+        context: context,
+        builder: (BuildContext context) {
+          final auth = Provider.of<AuthNotifier>(context, listen: false);
+          final TextEditingController controller =
+              TextEditingController(text: auth.user?.displayName);
+
+          File? imageFile;
+
+          Future<void> captureImage(String source, setState) async {
+            File? image = await ImageCapturer.captureImage(source);
+            setState(() {
+              imageFile = image;
+            });
+          }
+
+          void saveInfo() {
+            auth.updateDisplayName(controller.text);
+            if (imageFile != null) {
+              auth.uploadAvatar(imageFile!);
+            }
+            Navigator.of(context).pop();
+          }
+
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Edit your username'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  NavalTextField(
+                    controller: controller,
+                    label: 'Username',
+                    hint: 'Enter your username',
+                    obscureText: false,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a username';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () async {
+                      await captureImage("camera", setState);
+                    },
+                    child: const Text("open the camera"),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await captureImage("gallery", setState);
+                    },
+                    child: const Text("open the gallery"),
+                  ),
+                  if (imageFile != null)
+                    Image.file(
+                      imageFile!,
+                      width: 100,
+                      height: 100,
+                    ),
+                ],
               ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () async {
-                  await captureImage();
-                },
-                child: Text("open the camera"),
-              )
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+              actions: [
+                TextButton(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                'Save',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
+                TextButton(
+                  child: Text(
+                    'Save',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  onPressed: () => saveInfo(),
                 ),
-              ),
-              onPressed: () => saveInfo(),
-            ),
-          ],
-        );
-      },
-    );
+              ],
+            );
+          });
+        });
   }
 
   @override

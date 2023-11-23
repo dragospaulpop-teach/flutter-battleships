@@ -109,7 +109,8 @@ class AuthNotifier extends ChangeNotifier {
       try {
         User user = _auth.currentUser!;
         await user.updatePhotoURL(avatar);
-
+        await user.reload();
+        _user = _auth.currentUser;
         notifyListeners();
       } on FirebaseAuthException catch (e) {
         throw Exception(e.message);

@@ -5,12 +5,12 @@ import 'package:flutter_battleships/state/notifications_service.dart';
 import 'package:provider/provider.dart';
 
 class NotificationsPage extends StatelessWidget {
-  NotificationsPage({super.key});
+  const NotificationsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarWidget(title: 'Notifications'),
+      appBar: const AppbarWidget(title: 'Notifications'),
       body: SafeArea(
         child: Consumer<NotificationsService>(
           builder: (context, notifications, child) {
@@ -21,7 +21,7 @@ class NotificationsPage extends StatelessWidget {
                         .map((message) => buildMessageTile(message))
                         .toList(),
                   )
-                : Center(child: Text("No messages"));
+                : const Center(child: Text("No messages"));
           },
         ),
       ),

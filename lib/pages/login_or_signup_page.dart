@@ -25,7 +25,7 @@ class _LoginOrSignupPageState extends State<LoginOrSignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarWidget(title: 'Login or Signup'),
+      appBar: const AppbarWidget(title: 'Login or Signup'),
       drawer: AppDrawer(toggleDarkMode: widget.toggleDarkMode),
       body: SafeArea(
         child: Center(

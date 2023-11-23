@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
     final AuthNotifier auth = Provider.of<AuthNotifier>(context, listen: false);
 
     return Scaffold(
-      appBar: AppbarWidget(title: 'Naval Clash'),
+      appBar: const AppbarWidget(title: 'Naval Clash'),
       drawer: AppDrawer(toggleDarkMode: toggleDarkMode),
       body: SafeArea(
         child: Center(

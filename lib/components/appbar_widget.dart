@@ -14,7 +14,7 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize =>
-      Size.fromHeight(kToolbarHeight); // AppBar's default height
+      const Size.fromHeight(kToolbarHeight); // AppBar's default height
 }
 
 class AppBarContent extends StatelessWidget {
@@ -36,13 +36,13 @@ class AppBarContent extends StatelessWidget {
                     },
                     icon: Badge(
                       label: Text(notifications.messages.length.toString()),
-                      child: Icon(Icons.notifications),
+                      child: const Icon(Icons.notifications),
                     ),
                   );
                 }),
                 IconButton(
                   onPressed: () => auth.signOut(),
-                  icon: Icon(Icons.logout),
+                  icon: const Icon(Icons.logout),
                 ),
               ]
             : [],
