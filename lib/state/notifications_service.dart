@@ -45,11 +45,12 @@ class NotificationsService extends ChangeNotifier {
 
   void handleMessage(RemoteMessage? message) {
     if (message != null) {
-      messages.add(Message(
-        title: message.notification!.title!,
-        body: message.notification!.body!,
-        timestamp: Timestamp.fromDate(message.sentTime!),
-      ));
+      // messages.add(Message(
+      //   title: message.notification!.title!,
+      //   body: message.notification!.body!,
+      //   isSeen: false,
+      //   timestamp: Timestamp.fromDate(message.sentTime!),
+      // ));
 
       notifyListeners();
     }
@@ -75,6 +76,13 @@ class NotificationsService extends ChangeNotifier {
         .set({'token': token}, SetOptions(merge: true));
   }
 
+  Future<void> removeTokenFromFirestore() async {
+    return _firestore
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .set({'token': null}, SetOptions(merge: true));
+  }
+
   void setupMessages() {
     final String userId = _auth.currentUser!.uid;
     messagesListener = _firestore
@@ -86,11 +94,13 @@ class NotificationsService extends ChangeNotifier {
         .listen((event) {
       messages.clear();
       if (event.docs.isNotEmpty) {
-        for (var element in event.docs) {
+        for (var doc in event.docs) {
           Message message = Message(
-            title: element['title'],
-            body: element['body'],
-            timestamp: element['timestamp'],
+            // id: doc.id,
+            title: doc['title'],
+            body: doc['body'],
+            timestamp: doc['timestamp'],
+            isSeen: doc['isSeen'],
           );
           messages.add(message);
         }
@@ -99,7 +109,12 @@ class NotificationsService extends ChangeNotifier {
     });
   }
 
-  void stopLisening() {
+  Future<void> stopLisening() async {
+    // stop listening to messages in the firestore collection
     messagesListener?.cancel();
+    // remove token from local storage
+    await PreferencesService().deleteFCMToken(_auth.currentUser!.uid);
+    // remove tokenb from firestore
+    await removeTokenFromFirestore();
   }
 }

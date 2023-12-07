@@ -28,8 +28,6 @@ class AuthNotifier extends ChangeNotifier {
 
       if (user != null) {
         await _notificationsService.initialize(user.uid);
-      } else {
-        _notificationsService.stopLisening();
       }
 
       notifyListeners();
@@ -86,6 +84,8 @@ class AuthNotifier extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    await _notificationsService.stopLisening();
+
     return await _auth.signOut();
   }
 
@@ -96,6 +96,11 @@ class AuthNotifier extends ChangeNotifier {
         await user.updateDisplayName(username);
         await user.reload();
         _user = _auth.currentUser;
+
+        _firestore
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .set({'username': username}, SetOptions(merge: true));
 
         notifyListeners();
       } on FirebaseAuthException catch (e) {

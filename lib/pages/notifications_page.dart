@@ -18,7 +18,8 @@ class NotificationsPage extends StatelessWidget {
                 ? ListView(
                     shrinkWrap: true,
                     children: notifications.messages
-                        .map((message) => buildMessageTile(message))
+                        .map((message) =>
+                            buildMessageTile(message, notifications))
                         .toList(),
                   )
                 : const Center(child: Text("No messages"));
@@ -28,9 +29,16 @@ class NotificationsPage extends StatelessWidget {
     );
   }
 
-  ListTile buildMessageTile(Message message) {
+  ListTile buildMessageTile(
+    Message message,
+    NotificationsService notifications,
+  ) {
     return ListTile(
-      title: Text(message.title),
+      title: Text(
+        message.title,
+        style: TextStyle(
+            fontWeight: message.isSeen ? FontWeight.w600 : FontWeight.w900),
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -39,6 +47,7 @@ class NotificationsPage extends StatelessWidget {
         ],
       ),
       isThreeLine: true,
+      onTap: () => {},
     );
   }
 }

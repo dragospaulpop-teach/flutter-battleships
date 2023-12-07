@@ -35,7 +35,10 @@ class AppBarContent extends StatelessWidget {
                       Navigator.pushNamed(context, '/notifications');
                     },
                     icon: Badge(
-                      label: Text(notifications.messages.length.toString()),
+                      label: Text(notifications.messages
+                          .where((message) => message.isSeen == false)
+                          .length
+                          .toString()),
                       child: const Icon(Icons.notifications),
                     ),
                   );

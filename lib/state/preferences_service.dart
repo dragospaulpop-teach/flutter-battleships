@@ -12,4 +12,9 @@ class PreferencesService {
 
     preferences.setString('fcmToken-$uid', token);
   }
+
+  Future<void> deleteFCMToken(String uid) async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.remove('fcmToken-$uid');
+  }
 }
