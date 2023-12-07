@@ -19,7 +19,7 @@ class NotificationsPage extends StatelessWidget {
                     shrinkWrap: true,
                     children: notifications.messages
                         .map((message) =>
-                            buildMessageTile(message, notifications))
+                            buildMessageTile(context, message, notifications))
                         .toList(),
                   )
                 : const Center(child: Text("No messages"));
@@ -30,10 +30,14 @@ class NotificationsPage extends StatelessWidget {
   }
 
   ListTile buildMessageTile(
+    BuildContext context,
     Message message,
     NotificationsService notifications,
   ) {
     return ListTile(
+      tileColor: message.isSeen
+          ? null
+          : Theme.of(context).primaryColor.withOpacity(0.5),
       title: Text(
         message.title,
         style: TextStyle(
@@ -47,7 +51,9 @@ class NotificationsPage extends StatelessWidget {
         ],
       ),
       isThreeLine: true,
-      onTap: () => {},
+      onTap: () => {
+        notifications.markAsSeen(message.id),
+      },
     );
   }
 }

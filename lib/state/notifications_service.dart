@@ -96,7 +96,7 @@ class NotificationsService extends ChangeNotifier {
       if (event.docs.isNotEmpty) {
         for (var doc in event.docs) {
           Message message = Message(
-            // id: doc.id,
+            id: doc.id,
             title: doc['title'],
             body: doc['body'],
             timestamp: doc['timestamp'],
@@ -116,5 +116,14 @@ class NotificationsService extends ChangeNotifier {
     await PreferencesService().deleteFCMToken(_auth.currentUser!.uid);
     // remove tokenb from firestore
     await removeTokenFromFirestore();
+  }
+
+  Future<void> markAsSeen(String id) async {
+    await _firestore
+        .collection('notifications')
+        .doc(_auth.currentUser!.uid)
+        .collection('messages')
+        .doc(id)
+        .set({'isSeen': true}, SetOptions(merge: true));
   }
 }

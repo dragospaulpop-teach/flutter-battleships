@@ -72,22 +72,21 @@ exports.sendNotification = onDocumentWritten(
 
         if (receiverToken === null) {
           logger.info(`receiver ${receiverUsername} has no token`);
-          return;
+        } else {
+          // construct fcm message paylod
+          const payload = {
+            notification: {
+              title: "New battle challenge!",
+              body: newChallenge.issuerUsername + " has challenged you!",
+            },
+            token: receiverToken,
+          };
+
+          logger.info("notification payload: " + JSON.stringify(payload));
+
+          // send the notification
+          await messaging.send(payload);
         }
-
-        // construct fcm message paylod
-        const payload = {
-          notification: {
-            title: "New battle challenge!",
-            body: newChallenge.issuerUsername + " has challenged you!",
-          },
-          token: receiverToken,
-        };
-
-        logger.info("notification payload: " + JSON.stringify(payload));
-
-        // send the notification
-        await messaging.send(payload);
 
         // save notification message
         // into the notifications collection for the receiver
@@ -105,6 +104,7 @@ exports.sendNotification = onDocumentWritten(
             isOldChallenge ? " ...again!" : "!"
           }`,
           timestamp: FieldValue.serverTimestamp(),
+          isSeen: false,
         };
 
         await notificationsRef.add(notification);
