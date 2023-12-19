@@ -6,6 +6,7 @@ import 'package:flutter_battleships/pages/home_page.dart';
 import 'package:flutter_battleships/pages/login_or_signup_page.dart';
 import 'package:flutter_battleships/pages/notifications_page.dart';
 import 'package:flutter_battleships/pages/users_page.dart';
+import 'package:flutter_battleships/pages/battle_screen.dart';
 import 'package:flutter_battleships/state/auth_notifier.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +19,7 @@ class AppRouter {
       '/notifications': (context) => const NotificationsPage(),
       '/history': (context) => const HistoryPage(),
       '/users': (context) => UsersPage(),
+      '/battlescreen': (context) => const BattleScreen(),
       '/login': (context) => LoginOrSignupPage(
             toggleDarkMode: toggleDarkMode,
           )

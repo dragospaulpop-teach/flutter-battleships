@@ -201,6 +201,15 @@ class AppDrawer extends StatelessWidget {
                         Navigator.pushNamed(context, '/notifications');
                       },
                     ),
+                  // if (auth.user != null)
+                  //   ListTile(
+                  //     leading: const Icon(Icons.gamepad),
+                  //     title: const Text("Battle screen"),
+                  //     onTap: () {
+                  //       Navigator.pop(context);
+                  //       Navigator.pushNamed(context, '/battlescreen');
+                  //     },
+                  //   ),
                   ListTile(
                     leading: const Icon(Icons.info_sharp),
                     title: const Text("About"),
