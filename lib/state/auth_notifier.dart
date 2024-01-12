@@ -134,4 +134,33 @@ class AuthNotifier extends ChangeNotifier {
       }
     }
   }
+
+  Future<void> deleteAccount(String password) async {
+    try {
+      await reauthenticate(password);
+      await deleteUserDataFromFirestore();
+      await deleteAuthInfo();
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message);
+    }
+    // print(password);
+  }
+
+  Future<void> deleteUserDataFromFirestore() async {
+    String docID = FirebaseAuth.instance.currentUser!.uid;
+
+    await FirebaseFirestore.instance.collection('users').doc(docID).delete();
+  }
+
+  Future<void> deleteAuthInfo() async {
+    await _user!.delete();
+  }
+
+  Future<void> reauthenticate(String password) async {
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: _user!.email!,
+      password: password,
+    );
+    await _user!.reauthenticateWithCredential(credential);
+  }
 }

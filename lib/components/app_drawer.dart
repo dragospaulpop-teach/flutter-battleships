@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import "package:flutter/material.dart";
+import 'package:flutter/services.dart';
 import 'package:flutter_battleships/components/image_capturer.dart';
 import 'package:flutter_battleships/components/naval_text_field.dart';
 import 'package:flutter_battleships/state/auth_notifier.dart';
@@ -101,6 +102,46 @@ class AppDrawer extends StatelessWidget {
               ],
             );
           });
+        });
+  }
+
+  void deleteAccount(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          TextEditingController passwordController = TextEditingController();
+
+          return AlertDialog(
+              title: const Text('Confirm your password'),
+              content: NavalTextField(
+                label: 'Password',
+                hint: 'Enter your password',
+                obscureText: true,
+                controller: passwordController,
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      'Cancel',
+                    )),
+                TextButton(
+                    onPressed: () async {
+                      final auth =
+                          Provider.of<AuthNotifier>(context, listen: false);
+                      Navigator.of(context).pop();
+                      try {
+                        await auth.deleteAccount(passwordController.text);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Incorrect password'),
+                        ));
+                      }
+                    },
+                    child: Text(
+                      'Confirm',
+                    ))
+              ]);
         });
   }
 
@@ -233,6 +274,15 @@ class AppDrawer extends StatelessWidget {
                 toggleDarkMode?.call();
               },
             ),
+            if (auth.user != null)
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text("Delete account"),
+                onTap: () {
+                  Navigator.pop(context);
+                  deleteAccount(context);
+                },
+              ),
             if (auth.user != null)
               ListTile(
                 leading: const Icon(Icons.logout),
